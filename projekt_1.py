@@ -7,6 +7,7 @@ author: Jana Kučerová
 email: vocurca@seznam.cz
 
 discord: Jana Kučerová
+        vocurcavocurca
 
 """
 
