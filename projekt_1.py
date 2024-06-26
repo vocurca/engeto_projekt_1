@@ -7,11 +7,16 @@ author: Jana Kučerová
 email: vocurca@seznam.cz
 
 discord: Jana Kučerová
-        vocurcavocurca
 
 """
+import re
 
 from projekt_1_task_template import TEXTS
+
+separation = "-" * 40
+
+# zjištení počtu textů
+TEXTS_count = len(TEXTS)
 
 # registrovaní uživatelé
 users = {
@@ -23,74 +28,73 @@ users = {
 # ověření uživatele
 user = input("Enter username: ")
 password = input("Enter password: ")
-separation = "-" * 40
 print(separation)
 
-if (user in users) and (password in users[user]):
+if (user in users) and (password == users[user]):
     print("Welcome to the app,", user)
-    print("We have 3 texts to be analyzed.")
+    print("We have", TEXTS_count, "texts to be analyzed.")
     print(separation)
 else:
     print("Unregistered user, terminating the program...")
     exit()
 
 # výběr textu
-text_number = int(input("Enter a number btw. 1 and 3 to select: "))
-print(separation)
+try:
+    text_number = int(input(f"Enter a number btw. 1 and {TEXTS_count} to select: "))
+except:
+    print(separation)
+    print("This is not a number. Terminating the program...")
+    exit()
+else:
+    print(separation)
 
-if (text_number > 0) and (text_number < 4):
+if (text_number > 0) and (text_number <= (TEXTS_count)):
     selected_text = TEXTS[text_number-1]
     
     # očištění textu
-    uncleaned_words = list(selected_text.split())
-    words = []
-    for word in uncleaned_words:
-        cleaned_word = word.strip(",.")
-        words.append(cleaned_word)
+    words = re.findall(r'\b[a-zA-Z0-9]+\b', selected_text)
 
     # počet slov
-    print("There are", len(words), "words in the selected text.")
+    print("There are", len(words), "words in the selected text.")   
     
-    # počet slov s velkým písmenem na začátku
     sum_title = []
-    for word in words:
-        if word.istitle():
-            sum_title.append(word)
-    print("There are", len(sum_title), "titlecase words.")
-
-    # počet slov kapitálkami
     sum_upper = []
-    for word in words:
-        if word.isupper() and (word.isnumeric() or word.isalpha()):
-            sum_upper.append(word)
-    print("There are", len(sum_upper), "uppercase words.")
-
-    # počet slov malým písmenem
     sum_lower = []
-    for word in words:
-        if word.islower():
-            sum_lower.append(word)
-    print("There are", len(sum_lower), "lowercase words.")
-    
-    # počet čísel
     count_numbers = []
-    for word in words:
-        if word.isnumeric():
-            number = int(word)
-            count_numbers.append(number)
-    print("There are", len(count_numbers), "numeric strings.") 
-
-    # součet všech čísel
     sum_numbers = []
+
     for word in words:
-        if word.isnumeric():
+        if word.isalpha():
+            # počet slov s velkým písmenem na začátku
+            if word.istitle() or word.isupper():
+                sum_title.append(word)
+        
+            # počet slov kapitálkami
+            if word.isupper():
+                sum_upper.append(word)
+        
+            # počet slov malým písmenem
+            if word.islower():
+                sum_lower.append(word)
+        
+        elif word.isnumeric():
             number = int(word)
-            sum_numbers.append(number)
+            
+            # počet čísel
+            count_numbers.append(number)
+            
+            # součet všech čísel
+            sum_numbers.append(number)        
+
+    print("There are", len(sum_title), "titlecase words.")  
+    print("There are", len(sum_upper), "uppercase words.")
+    print("There are", len(sum_lower), "lowercase words.")
+    print("There are", len(count_numbers), "numeric strings.")
     print("The sum of all numbers is", sum(sum_numbers), "\b.")
   
     # hlavička grafu s délkou slov a počtem výskytu
     print(separation)   
-    print("  LEN|  OCCURENCES    |NR.") 
+    print("  LEN| OCCURENCES     |NR.") 
     print(separation)
 
     # počet výskytu
@@ -108,14 +112,17 @@ if (text_number > 0) and (text_number < 4):
     
     sorted_lenghts = dict(sorted(dict_lenghts.items()))
    
-    # tisk hodnot
+    # tisk hodnot do grafu
+    values = list(sorted_lenghts.values())
+    values.sort()
+    
     for number in sorted_lenghts:
         if number < 10:
-            print("  ", number, "|", "*" * sorted_lenghts.get(number), " " * (13 - sorted_lenghts.get(number)), "|", sorted_lenghts.get(number))
+            print("  ", number, "|", "*" * sorted_lenghts.get(number), " " * ((values[-1] + 1) - sorted_lenghts.get(number)), "|", sorted_lenghts.get(number))
         else:
-            print(" ", number, "|", "*" * sorted_lenghts.get(number), " " * (13 - sorted_lenghts.get(number)), "|", sorted_lenghts.get(number))
-
+            print(" ", number, "|", "*" * sorted_lenghts.get(number), " " * ((values[-1] + 1) - sorted_lenghts.get(number)), "|", sorted_lenghts.get(number))
+    print(separation)
     
 else:
-    print(text_number, "is not the number btw. 1 and 3. Terminating the program...")
+    print(f"{text_number} is not the number btw. 1 and {TEXTS_count}. Terminating the program...")
     exit()
