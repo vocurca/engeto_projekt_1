@@ -52,7 +52,7 @@ if (text_number > 0) and (text_number <= (TEXTS_count)):
     selected_text = TEXTS[text_number-1]
     
     # očištění textu
-    words = re.findall(r'\b[a-zA-Z0-9]+\b', selected_text)
+    words = re.findall(r"\b[a-zA-Z0-9]+\b", selected_text)
 
     # počet slov
     print("There are", len(words), "words in the selected text.")   
